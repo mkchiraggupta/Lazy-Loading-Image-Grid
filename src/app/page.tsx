@@ -16,6 +16,7 @@ const Home: React.FC = () => {
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<ImageData | null>(null);
   const loader = useRef<HTMLDivElement | null>(null);
   const isFetchingRef = useRef<boolean>(false);
   const LIMIT = 9;
@@ -101,6 +102,17 @@ const Home: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedImage(null);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   return (
     <main className="page">
       <header className="hero">
@@ -110,7 +122,12 @@ const Home: React.FC = () => {
 
       <div className="grid">
         {images.map((img) => (
-          <div className="image-card" key={img.id}>
+          <button
+            type="button"
+            className="image-card image-trigger"
+            key={img.id}
+            onClick={() => setSelectedImage(img)}
+          >
             <Image
               src={`https://picsum.photos/id/${img.id}/800/600`}
               alt={img.author}
@@ -121,7 +138,7 @@ const Home: React.FC = () => {
               unoptimized
             />
             <div className="overlay">{img.author}</div>
-          </div>
+          </button>
         ))}
 
         {isLoading &&
@@ -166,6 +183,42 @@ const Home: React.FC = () => {
         >
           Top
         </button>
+      )}
+
+      {selectedImage && (
+        <div
+          className="modal-backdrop"
+          role="presentation"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div
+            className="modal-content"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Preview image by ${selectedImage.author}`}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="modal-close"
+              onClick={() => setSelectedImage(null)}
+              aria-label="Close image preview"
+            >
+              <span className="modal-close-icon" aria-hidden />
+            </button>
+            <div className="modal-image-wrap">
+              <Image
+                src={`https://picsum.photos/id/${selectedImage.id}/1200/900`}
+                alt={selectedImage.author}
+                fill
+                className="modal-image"
+                sizes="90vw"
+                unoptimized
+              />
+            </div>
+            <p className="modal-author">Photo by {selectedImage.author}</p>
+          </div>
+        </div>
       )}
     </main>
   );

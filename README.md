@@ -10,6 +10,7 @@ The main goal is to demonstrate a clean lazy-loading flow using `IntersectionObs
 - Shows a responsive grid of images.
 - Fetches image data page by page from the Picsum API.
 - Loads the next batch automatically while scrolling.
+- Lets you open a full image preview in a modal.
 - Avoids duplicate images in the UI.
 - Handles fetch failures with a retry option.
 
@@ -21,7 +22,7 @@ The main goal is to demonstrate a clean lazy-loading flow using `IntersectionObs
 4. `IntersectionObserver` watches that sentinel.
 5. When the sentinel enters the viewport, the app increments the page number.
 6. A new API request is made and results are appended to existing images.
-7. If the API returns fewer items than expected, the app marks the list as finished (`hasMore = false`).
+7. If the API returns no items, the app marks the list as finished (`hasMore = false`).
 
 ## Why `IntersectionObserver` Here?
 
