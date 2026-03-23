@@ -19,6 +19,7 @@ const Home: React.FC = () => {
   const loader = useRef<HTMLDivElement | null>(null);
   const isFetchingRef = useRef<boolean>(false);
   const LIMIT = 9;
+  const SKELETON_COUNT = 6;
 
   const fetchImages = useCallback(async () => {
     if (isFetchingRef.current || !hasMore) return;
@@ -43,7 +44,8 @@ const Home: React.FC = () => {
         return [...prev, ...newImages];
       });
 
-      if (data.length < LIMIT) {
+      // Stop only when API returns no items.
+      if (data.length === 0) {
         setHasMore(false);
       }
     } catch (error) {
@@ -93,14 +95,17 @@ const Home: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleLoadMore = () => {
+    if (!isFetchingRef.current && hasMore) {
+      setPage((prev) => prev + 1);
+    }
+  };
+
   return (
     <main className="page">
       <header className="hero">
         <h1>Lazy Loading Image Grid</h1>
         <p>Scroll to continuously load beautiful random images.</p>
-        <p className="meta">
-          Loaded images: <strong>{images.length}</strong>
-        </p>
       </header>
 
       <div className="grid">
@@ -118,6 +123,15 @@ const Home: React.FC = () => {
             <div className="overlay">{img.author}</div>
           </div>
         ))}
+
+        {isLoading &&
+          Array.from({ length: SKELETON_COUNT }).map((_, index) => (
+            <div
+              className="image-card skeleton-card"
+              key={`skeleton-${page}-${index}`}
+              aria-hidden
+            />
+          ))}
       </div>
 
       {error && (
@@ -129,9 +143,16 @@ const Home: React.FC = () => {
         </div>
       )}
 
-      {isLoading && <p className="status-text">Loading more images...</p>}
       {!hasMore && !isLoading && (
         <p className="status-text">You have reached the end of the gallery.</p>
+      )}
+
+      {!error && hasMore && !isLoading && (
+        <div className="status-row">
+          <button type="button" onClick={handleLoadMore}>
+            Load more
+          </button>
+        </div>
       )}
 
       <div ref={loader} className="loader-sentinel" aria-hidden />

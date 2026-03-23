@@ -25,11 +25,6 @@
   color: #4b5563;
 }
 
-.hero .meta {
-  margin-top: 8px;
-  font-size: 0.95rem;
-}
-
 .image-card {
   overflow: hidden;
   border-radius: 12px;
@@ -57,6 +52,12 @@
   font-size: 0.875rem;
   color: #f9fafb;
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.72));
+}
+
+.skeleton-card {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 37%, #e5e7eb 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.2s ease-in-out infinite;
 }
 
 .status-row {
@@ -104,10 +105,24 @@
   transform: translateY(-1px);
 }
 
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   .hero p,
   .status-text {
     color: #9ca3af;
+  }
+
+  .skeleton-card {
+    background: linear-gradient(90deg, #1f2937 25%, #374151 37%, #1f2937 63%);
+    background-size: 400% 100%;
   }
 
   .status-row button {
