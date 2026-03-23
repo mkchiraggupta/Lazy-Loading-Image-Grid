@@ -15,6 +15,7 @@ const Home: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState<boolean>(false);
   const loader = useRef<HTMLDivElement | null>(null);
   const isFetchingRef = useRef<boolean>(false);
   const LIMIT = 9;
@@ -79,11 +80,27 @@ const Home: React.FC = () => {
     };
   }, [hasMore]);
 
+  useEffect(() => {
+    const onScroll = () => {
+      setShowScrollTop(window.scrollY > 600);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <main className="page">
       <header className="hero">
         <h1>Lazy Loading Image Grid</h1>
         <p>Scroll to continuously load beautiful random images.</p>
+        <p className="meta">
+          Loaded images: <strong>{images.length}</strong>
+        </p>
       </header>
 
       <div className="grid">
@@ -118,6 +135,17 @@ const Home: React.FC = () => {
       )}
 
       <div ref={loader} className="loader-sentinel" aria-hidden />
+
+      {showScrollTop && (
+        <button
+          type="button"
+          className="scroll-top"
+          onClick={handleScrollToTop}
+          aria-label="Scroll back to top"
+        >
+          Top
+        </button>
+      )}
     </main>
   );
 };
